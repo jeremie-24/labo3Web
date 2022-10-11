@@ -96,23 +96,26 @@
             function refreshNouvellesList(nouvelles, ETag) {
                 function makeImage(url) {
                     let link = $(`<a href='${url}' target='_blank'></a>`)
-                    link.append($(`<img  src="${url}">`));
+                    link.append($(`<img class="nouvelleImage" src="${url}">`));
                     return link;
                 }
                 function insertIntoNouvelleList(nouvelle) {
-                    let catElem = $(`<div class="ellipsis">${nouvelle.Category}</div>`);
                     let titElem = $(`<div  class="ellipsis">${nouvelle.Title}</div>`);
+                    let catElem = $(`<div class="ellipsis">${nouvelle.Category}</div>`);
+                    let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
                     // partial collapse https://codepen.io/beedaan/pen/JWNWXa
                     let textElem = $(`<div class="textModule"><p  class="collapse" id="collapseExample" aria-expanded="false">${nouvelle.Text}</p><a role="button" class="collapsed" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample"></div>`);
-                    let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
+                    
                     let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
                     let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
                     let nouvelleRow = $("<div class='nouvelleLayout nouvelleRow'>");
-                    nouvelleRow.append(catElem);
-                    nouvelleRow.append(makeImage(nouvelle.ImageUrl));
+
                     nouvelleRow.append(titElem);
-                    nouvelleRow.append(textElem);
+                    nouvelleRow.append(catElem);
                     nouvelleRow.append(dateElem);
+                    nouvelleRow.append(makeImage(nouvelle.ImageUrl));
+                   
+                    nouvelleRow.append(textElem);
                     nouvelleRow.append(editCmd);
                     nouvelleRow.append(deleteCmd);
                     $("#nouvellesList").append(nouvelleRow);
