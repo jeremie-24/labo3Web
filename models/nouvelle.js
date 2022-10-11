@@ -1,7 +1,7 @@
 const Model = require('./model');
 module.exports =
     class Nouvelle extends Model {
-        constructor(category, title, text, imageUrl, date) {
+        constructor(category, title, text, imageUrl) {
             super();
             this.Category = category !== undefined ? category : "";
             this.Title = title !== undefined ? title : "";
