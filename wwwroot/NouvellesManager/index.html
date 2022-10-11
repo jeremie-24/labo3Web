@@ -102,7 +102,8 @@
                 function insertIntoNouvelleList(nouvelle) {
                     let catElem = $(`<div class="ellipsis">${nouvelle.Category}</div>`);
                     let titElem = $(`<div  class="ellipsis">${nouvelle.Title}</div>`);
-                    let textElem = $(`<div  class="ellipsis">${nouvelle.Text}</div>`);
+                    // partial collapse https://codepen.io/beedaan/pen/JWNWXa
+                    let textElem = $(`<div class="textModule"><p  class="collapse" id="collapseExample" aria-expanded="false">${nouvelle.Text}</p><a role="button" class="collapsed" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample"></div>`);
                     let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
                     let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
                     let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);

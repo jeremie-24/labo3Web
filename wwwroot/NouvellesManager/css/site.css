@@ -106,6 +106,30 @@ label {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/*https://codepen.io/beedaan/pen/JWNWXa*/
+.textModule {
+    width: 500px;
+  }
+  
+  .textModule p.collapse[aria-expanded="false"] {
+      display: block;
+      height: 40px !important;
+      overflow: hidden;
+  }
+  
+  .textModule p.collapsing[aria-expanded="false"] {
+      height: 40px !important;
+  }
+  
+  .textModule a.collapsed:after  {
+      content: '+ Show More';
+  }
+  
+  .textModule a:not(.collapsed):after {
+      content: '- Show Less';
+  }
+
 div2, span2 {
     border:1px solid red;
 }
