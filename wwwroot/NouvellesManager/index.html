@@ -46,7 +46,7 @@
             <!-- Dialogs containers-->
             <div>
                 <div id="nouvelleDlg">
-                    <form id="bookmakForm">
+                    <form id="nouvelleForm">
                         <input type="hidden" id="Id_input" value="0">
 
                         <label for="title_input">Titre</label>
@@ -84,6 +84,7 @@
             let hideSearchBar = true;
             let nouvelleIdToDelete = 0; // used by confirmDeleteDlg
             let selectedCategory = "";
+            let previousScrollPosition = 0;
 
             init_UI();
             HEAD(checkETag, error);
@@ -141,6 +142,7 @@
                     $("#nouvellesList").append(nouvelleRow);
                 }
                 currentETag = ETag;
+                previousScrollPosition = $(".scrollContainer").scrollTop();
                 $("#nouvellesList").empty();
                 let currentCategory = "";
                 for (let nouvelle of nouvelles) {
@@ -150,6 +152,7 @@
                         nouvelle.Category = "";
                     insertIntoNouvelleList(nouvelle);
                 }
+                $(".scrollContainer").scrollTop(previousScrollPosition);
                 $(".editCmd").click(e => { editNouvelle(e) });
                 $(".deleteCmd").click(e => { deleteNouvelle(e) });
                 $('[data-toggle="tooltip"]').tooltip();
