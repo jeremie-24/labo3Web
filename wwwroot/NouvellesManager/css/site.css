@@ -9,7 +9,7 @@ body {
     min-width: 490px;
     margin: auto;
     background-color: rgb(255, 255, 255);
-    height: 100%;
+    height: 100vh;
     border: 1px solid lightgray;
 }
 
@@ -43,6 +43,7 @@ body {
 #nouvellesList {
     width: 100%;
     padding: 10px;
+    text-align: center;
 }
 
 .favicon {
@@ -109,7 +110,10 @@ label {
 .nouvelleImage{
     max-width: 90%;
 }
-
+.title{
+    font-size: calc(1.325rem + .9vw);
+    font-weight: 500;
+}
 /*https://codepen.io/beedaan/pen/JWNWXa*/
 .textModule {
     width: 500px;

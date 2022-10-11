@@ -100,7 +100,7 @@
                     return link;
                 }
                 function insertIntoNouvelleList(nouvelle) {
-                    let titElem = $(`<div  class="ellipsis">${nouvelle.Title}</div>`);
+                    let titElem = $(`<div  class="ellipsis title">${nouvelle.Title}</div>`);
                     let catElem = $(`<div class="ellipsis">${nouvelle.Category}</div>`);
                     let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
                     // partial collapse https://codepen.io/beedaan/pen/JWNWXa
