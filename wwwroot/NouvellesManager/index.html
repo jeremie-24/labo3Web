@@ -20,7 +20,7 @@
                     <img src="favicon.ico" alt="" data-toggle="tooltip"
                         title="Gestionnaire de nouvelles">
                     <span class="header">Gestionnaire de Nouvelles </span>
-                    <span class="cmd fa fa-plus-square" id="newNouvelleCmd" title="Ajouter une nouvelle"
+                    <span class="cmd fa fa-plus-square row justify-content-end" id="newNouvelleCmd" title="Ajouter une nouvelle"
                         data-toggle="tooltip"></span>
                 </div>
 
@@ -106,8 +106,8 @@
                     // partial collapse https://codepen.io/beedaan/pen/JWNWXa
                     let textElem = $(`<div class="textModule"><p  class="collapse" id="collapseExample" aria-expanded="false">${nouvelle.Text}</p><a role="button" class="collapsed" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample"></div>`);
                     
-                    let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
-                    let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
+                    let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
+                    let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
                     let nouvelleRow = $("<div class='nouvelleLayout nouvelleRow'>");
 
                     nouvelleRow.append(titElem);
@@ -210,8 +210,8 @@
             function nouvelleToForm(nouvelle) {
                 $("#Id_input").val(nouvelle.Id);
                 $("#title_input").val(nouvelle.Title);
-                $("#url_input").val(nouvelle.Url);
-                $("#text_input").val(nouvelle.Url);
+                $("#url_input").val(nouvelle.ImageUrl);
+                $("#text_input").val(nouvelle.Text);
                 $("#category_input").val(nouvelle.Category);
             }
 
@@ -221,17 +221,17 @@
                 $(".fa-refresh").click(e => { getNouvellesList() })
 
                 $("#nouvelleDlg").dialog({
-                    title: "Ajouter une nouvelle",
+                    title: "Formulaire une nouvelle",
                     autoOpen: false,
                     modal: true,
                     show: { effect: 'fade', speed: 400 },
                     hide: { effect: 'fade', speed: 400 },
-                    width: 400,
+                    width: 600,
                     minWidth: 400,
-                    maxWidth: 500,
-                    height: 440,
+                    maxWidth: 1000,
+                    height: 700,
                     minHeight: 440,
-                    maxHeight: 440,
+                    maxHeight: 900,
                     position: { my: "top", at: "top", of: window },
                     buttons: [{
                         id: "nouvelleDlgOkBtn",

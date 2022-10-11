@@ -1,12 +1,13 @@
 body {
     background-image: linear-gradient(45deg, rgb(131, 255, 131), rgb(156, 156, 255));
+    height: 100vh;
 }
 
 .mainContainer {
     display: flex;
     flex-direction: column;
     max-width: 1200px;
-    min-width: 490px;
+    min-width: 300px;
     margin: auto;
     background-color: rgb(255, 255, 255);
     height: 100vh;
@@ -57,30 +58,17 @@ body {
     align-items: center;
 
 }
-.searchBarLayout {
-    display: grid;
-    grid-template-columns: 0.5fr 40px 1fr 35px 35px 16px;
-    align-items: center;
 
 }
 .nouvelleLayout {
     border-radius: 8px;
-    padding-left: 5px;
-
 }
 
-.nouvelleRow>.cmd {
-    display: none;
-}
 
-.nouvelleRow:hover>.cmd {
-    display: inline-block;
-}
 
-.nouvelleRow:hover {
-    background-color: rgb(195, 255, 255);
+.littleMargin{
+    margin: 4px;
 }
-
 .cmd {
     cursor: pointer;
     font-size: 30px !important;
@@ -115,10 +103,6 @@ label {
     font-weight: 500;
 }
 /*https://codepen.io/beedaan/pen/JWNWXa*/
-.textModule {
-    width: 500px;
-  }
-  
   .textModule p.collapse[aria-expanded="false"] {
       display: block;
       height: 40px !important;
@@ -137,6 +121,9 @@ label {
       content: '- Show Less';
   }
 
+  .rowAlignRight{
+    align-self: right;
+  }
 div2, span2 {
     border:1px solid red;
 }
