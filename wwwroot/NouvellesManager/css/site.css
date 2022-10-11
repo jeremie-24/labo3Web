@@ -40,7 +40,7 @@ body {
     border-top: 1px solid lightgray;
 }
 
-#bookmarksList {
+#nouvellesList {
     width: 100%;
     padding: 10px;
 }
@@ -52,7 +52,7 @@ body {
 
 .headerLayout {
     display: grid;
-    grid-template-columns: 50px auto 35px 35px 19px;
+    grid-template-columns: 50px auto 35px 35px;
     align-items: center;
 
 }
@@ -62,7 +62,7 @@ body {
     align-items: center;
 
 }
-.bookmarkLayout {
+.nouvelleLayout {
     display: grid;
     grid-template-columns: 0.5fr 40px 1fr 35px 35px;
     align-items: center;
@@ -71,15 +71,15 @@ body {
 
 }
 
-.bookmarkRow>.cmd {
+.nouvelleRow>.cmd {
     display: none;
 }
 
-.bookmarkRow:hover>.cmd {
+.nouvelleRow:hover>.cmd {
     display: inline-block;
 }
 
-.bookmarkRow:hover {
+.nouvelleRow:hover {
     background-color: rgb(195, 255, 255);
 }
 

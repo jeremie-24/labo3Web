@@ -22,20 +22,8 @@
                     <span class="header">Gestionnaire de Nouvelles </span>
                     <span class="cmd fa fa-plus-square" id="newNouvelleCmd" title="Ajouter une nouvelle"
                         data-toggle="tooltip"></span>
-                    <span class="cmd fa fa-search" title="Afficher/masquer la barre de recherche"
-                        data-toggle="tooltip"></span>
                 </div>
-                <div id="searchBar">
-                    <div class="searchBarLayout">
-                        <select id="searchCategory" class="form-control">
-                            <!-- filled programmatically-->
-                        </select>
-                        <span> <!-- skip a column --> </span>
-                        <input type="search" id="searchTitle" class="form-control" placeholder="Recherche de favoris" />
-                        <span> <!-- skip a column --> </span>
-                        <span class="cmd fa fa-refresh"></span>
-                    </div>
-                </div>
+
             </div>
 
             <div class="scrollContainer">
@@ -52,13 +40,16 @@
                         <label for="title_input">Titre</label>
                         <input type="text" id="title_input" class="form-control" required invalidMessage="Obligatoire">
 
-                        <label for="url_input">Hyperlien</label>
+                        <label for="url_input">Hyperlien de l'image</label>
                         <input type="url" id="url_input" class="form-control URL" required
                             invalidMessage="Lien invalide">
 
                         <label for="category_input">Catégorie</label>
                         <input type="text" id="category_input" class="form-control" required
                             invalidMessage="Obligatoire">
+
+                        <label for="title_input">Texte</label>
+                        <textarea id="text_input" class="form-control"cols="30" rows="10" required invalidMessage="Obligatoire"></textarea>
                     </form>
                 </div>
                 <div id="confirmDeleteDlg">
@@ -79,9 +70,6 @@
             let holdCheckETag = false;
             let currentETag = "";
             let createMode = true;
-            let searchCategory = "";
-            let searchTitle = "";
-            let hideSearchBar = true;
             let nouvelleIdToDelete = 0; // used by confirmDeleteDlg
             let selectedCategory = "";
             let previousScrollPosition = 0;
@@ -99,44 +87,30 @@
 
             function getNouvellesList() {
                 function prepareQueryString() {
-                    let queryString = "?sort=Category&sort=Title";
-                    if (!hideSearchBar) {
-                        selectedCategory = $("#searchCategory").val();
-                        let searchTitle = $("#searchTitle").val();
-                        if (selectedCategory != "")
-                            queryString += "&Category=" + selectedCategory;
-                        if (searchTitle != "")
-                            queryString += "&Title=*" + searchTitle + "*";
-                    }
+                    let queryString = "?sort=Date,desc";
                     return queryString;
                 }
                 GET_ALL(refreshNouvellesList, error, prepareQueryString());
-                GET_ALL(refreshCategoryList, error, "?fields=Category");
-            }
-            function refreshCategoryList(categories) {
-                $("#searchCategory").empty();
-                $("#searchCategory").append("<option value=''>Toutes les catégories</option>");
-                for (let item of categories) {
-                    let category = item.Category;
-                    let selected = (selectedCategory == category ? " selected " : "");
-                    $("#searchCategory").append(`<option value='${category}' ${selected}>${category}</option>`);
-                }
             }
             function refreshNouvellesList(nouvelles, ETag) {
-                function makeFavicon(url) {
+                function makeImage(url) {
                     let link = $(`<a href='${url}' target='_blank'></a>`)
-                    link.append($(`<img class='favicon' src="https://www.google.com/s2/favicons?domain=${url}&sz=48">`));
+                    link.append($(`<img  src="${url}">`));
                     return link;
                 }
                 function insertIntoNouvelleList(nouvelle) {
                     let catElem = $(`<div class="ellipsis">${nouvelle.Category}</div>`);
                     let titElem = $(`<div  class="ellipsis">${nouvelle.Title}</div>`);
+                    let textElem = $(`<div  class="ellipsis">${nouvelle.Text}</div>`);
+                    let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(nouvelle.Date)}</div>`);
                     let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
                     let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
                     let nouvelleRow = $("<div class='nouvelleLayout nouvelleRow'>");
                     nouvelleRow.append(catElem);
-                    nouvelleRow.append(makeFavicon(nouvelle.Url));
+                    nouvelleRow.append(makeImage(nouvelle.ImageUrl));
                     nouvelleRow.append(titElem);
+                    nouvelleRow.append(textElem);
+                    nouvelleRow.append(dateElem);
                     nouvelleRow.append(editCmd);
                     nouvelleRow.append(deleteCmd);
                     $("#nouvellesList").append(nouvelleRow);
@@ -146,10 +120,6 @@
                 $("#nouvellesList").empty();
                 let currentCategory = "";
                 for (let nouvelle of nouvelles) {
-                    if (nouvelle.Category !== currentCategory)
-                        currentCategory = nouvelle.Category;
-                    else
-                        nouvelle.Category = "";
                     insertIntoNouvelleList(nouvelle);
                 }
                 $(".scrollContainer").scrollTop(previousScrollPosition);
@@ -172,7 +142,7 @@
                         errorMessage = "Service ou données introuvables";
                         break;
                     case 409:
-                        errorMessage = "Conflits de données: Hyperlien existe déjà";
+                        errorMessage = "Conflits de données: Le Titre existe déjà";
                         break;
                     case 500:
                         errorMessage = "Erreur interne du service";
@@ -187,7 +157,7 @@
                 holdCheckETag = true;
                 createMode = true;
                 resetNouvelleForm()
-                $("#nouvelleDlg").dialog('option', 'title', 'Ajout de favori');
+                $("#nouvelleDlg").dialog('option', 'title', 'Ajout de nouvelle');
                 $("#nouvelleDlgOkBtn").text("Ajouter");
                 $("#nouvelleDlg").dialog('open');
             }
@@ -196,7 +166,7 @@
                 createMode = false;
                 GET_ID(e.target.getAttribute("nouvelleid"), nouvelleToForm, error);
                 holdCheckETag = true;
-                $("#nouvelleDlg").dialog('option', 'title', 'Modification de favori');
+                $("#nouvelleDlg").dialog('option', 'title', 'Modification de nouvelle');
                 $("#nouvelleDlgOkBtn").text("Modifier");
                 $("#nouvelleDlg").dialog('open');
             }
@@ -206,12 +176,12 @@
                 GET_ID(
                     nouvelleIdToDelete,
                     nouvelle => {
-                        $("#confirmationMessage").html("Voulez-vous vraiment effacer le favori <b>" + nouvelle.Title + "</b>?")
+                        $("#confirmationMessage").html("Voulez-vous vraiment effacer la nouvelle <b>" + nouvelle.Title + "</b>?")
                     },
                     error
                 );
                 holdCheckETag = true;
-                $("#confirmDlg").dialog('option', 'title', 'Retrait de favori...');
+                $("#confirmDlg").dialog('option', 'title', 'Retrait de nouvelle...');
                 $("#confirmDeleteDlgOkBtn").text("Effacer");
                 $("#confirmDeleteDlg").dialog('open');
             }
@@ -224,7 +194,8 @@
             }
             function nouvelleFromForm() {
                 if ($("#bookmakForm")[0].checkValidity()) {
-                    let nouvelle = { Id: parseInt($("#Id_input").val()), Title: $("#title_input").val(), Url: $("#url_input").val(), Category: $("#category_input").val() };
+                    let nouvelle = { Id: parseInt($("#Id_input").val()), Title: $("#title_input").val(), ImageUrl: $("#url_input").val(),
+                    Text: $("#text_input").val(), Category: $("#category_input").val(), Date: Date.now() };
                     return nouvelle;
                 } else {
                     $("#bookmakForm")[0].reportValidity()
@@ -235,25 +206,17 @@
                 $("#Id_input").val(nouvelle.Id);
                 $("#title_input").val(nouvelle.Title);
                 $("#url_input").val(nouvelle.Url);
+                $("#text_input").val(nouvelle.Url);
                 $("#category_input").val(nouvelle.Category);
             }
 
             function init_UI() {
                 $("#newNouvelleCmd").click(newNouvelle)
-                $("#searchCategory").change(() => { selectedCategory = $("#searchCategory").val(); getNouvellesList(); })
 
                 $(".fa-refresh").click(e => { getNouvellesList() })
-                $(".fa-search").click(e => {
-                    hideSearchBar = !hideSearchBar;
-                    if (hideSearchBar)
-                        $("#searchBar").hide();
-                    else
-                        $("#searchBar").show();
-                    getNouvellesList();
-                })
 
                 $("#nouvelleDlg").dialog({
-                    title: "Nouveau favori",
+                    title: "Ajouter une nouvelle",
                     autoOpen: false,
                     modal: true,
                     show: { effect: 'fade', speed: 400 },
