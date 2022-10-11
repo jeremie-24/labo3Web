@@ -63,9 +63,6 @@ body {
 
 }
 .nouvelleLayout {
-    display: grid;
-    grid-template-columns: 0.5fr 40px 1fr 35px 35px;
-    align-items: center;
     border-radius: 8px;
     padding-left: 5px;
 
