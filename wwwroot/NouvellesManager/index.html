@@ -194,12 +194,12 @@
                 $("#category_input").val("");
             }
             function nouvelleFromForm() {
-                if ($("#bookmakForm")[0].checkValidity()) {
+                if ($("#nouvelleForm")[0].checkValidity()) {
                     let nouvelle = { Id: parseInt($("#Id_input").val()), Title: $("#title_input").val(), ImageUrl: $("#url_input").val(),
                     Text: $("#text_input").val(), Category: $("#category_input").val(), Date: Date.now() };
                     return nouvelle;
                 } else {
-                    $("#bookmakForm")[0].reportValidity()
+                    $("#nouvelleForm")[0].reportValidity()
                 }
                 return false;
             }

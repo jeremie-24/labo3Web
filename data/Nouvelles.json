@@ -1,10 +1,1 @@
-[
-    {
-        "Id": 1,
-        "Category": "Politique",
-        "Title": "Les élections 2022",
-        "Text": "La CAQ défonce encore",
-        "ImageUrl": "https://mobile-img.lpcdn.ca/lpca/924x/r3996/987b916c-b512-11eb-a88b-02fe89184577.jpg",
-        "Date": 1665492430363
-    }
-]
+[{"Id":1,"Category":"Politique","Title":"Les élections 2022","Text":"La CAQ défonce encore","ImageUrl":"https://mobile-img.lpcdn.ca/lpca/924x/r3996/987b916c-b512-11eb-a88b-02fe89184577.jpg","Date":1665492430363}]
