@@ -162,7 +162,7 @@
                 let editCmd = $(`<span class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
                 let deleteCmd = $(`<span class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
 
-                let titElem = $(`<div  class="ellipsis title">${nouvelle.Title}</div>`);
+                let titElem = $(`<div  class="title">${nouvelle.Title}</div>`);
                 let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
                 // partial collapse https://codepen.io/beedaan/pen/JWNWXa
                 let textElem = $(`<div class="textModule"><p class="collapse" id="collapser${nouvelle.Id}" aria-expanded="false">${nouvelle.Text}</p><button id="ShowMore${nouvelle.Id}" target="#collapser${nouvelle.Id}" class="collapser btn btn-primary">+ Voir plus</button></div>`);
