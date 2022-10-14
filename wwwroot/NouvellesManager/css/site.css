@@ -102,6 +102,11 @@ label {
     font-size: calc(1.325rem + .9vw);
     font-weight: 500;
 }
+
+p{
+    overflow-wrap: break-word;
+   word-wrap: break-word;
+}
 /*https://codepen.io/beedaan/pen/JWNWXa*/
   .textModule p.collapse[aria-expanded="false"] {
       display: block;
