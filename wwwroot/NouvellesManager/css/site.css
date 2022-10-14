@@ -15,27 +15,27 @@ body {
 }
 
 .headerPanel {
-    flex:0.5;
+    flex: 0.5;
     background-image: linear-gradient(180deg, lightgray, gray);
-    padding:5px;
+    padding: 5px;
 }
 
 .scrollContainer {
     overflow-y: scroll;
-    flex:12;
+    flex: 12;
     border-top: 1px solid lightgray;
 }
 
 .header {
     width: 100%;
     font-size: 26px;
-    color:rgb(55, 55, 55);
+    color: rgb(55, 55, 55);
     font-weight: bold;
     text-align: center;
 }
 
 #searchBar {
-    padding-top:10px;
+    padding-top: 10px;
     display: none;
     margin: 5px;
     border-top: 1px solid lightgray;
@@ -66,9 +66,10 @@ body {
 
 
 
-.littleMargin{
+.littleMargin {
     margin: 4px;
 }
+
 .cmd {
     cursor: pointer;
     font-size: 30px !important;
@@ -95,35 +96,33 @@ label {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.nouvelleImage{
+
+.nouvelleImage {
     max-width: 90%;
 }
-.title{
+
+.title {
     font-size: calc(1.325rem + .9vw);
     font-weight: 500;
 }
-/*https://codepen.io/beedaan/pen/JWNWXa*/
-  .textModule p.collapse[aria-expanded="false"] {
-      display: block;
-      height: 40px !important;
-      overflow: hidden;
-  }
-  
-  .textModule p.collapsing[aria-expanded="false"] {
-      height: 40px !important;
-  }
-  
-  .textModule a.collapsed:after  {
-      content: '+ Show More';
-  }
-  
-  .textModule a:not(.collapsed):after {
-      content: '- Show Less';
-  }
 
-  .rowAlignRight{
+/*https://codepen.io/beedaan/pen/JWNWXa*/
+.textModule p.collapse[aria-expanded="false"] {
+    display: block;
+    height: 40px !important;
+    overflow: hidden;
+}
+
+.textModule p.collapsing[aria-expanded="false"] {
+    height: fit-content !important;
+    overflow: hidden;
+}
+
+.rowAlignRight {
     align-self: right;
-  }
-div2, span2 {
-    border:1px solid red;
+}
+
+div2,
+span2 {
+    border: 1px solid red;
 }

@@ -1,313 +1,329 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nouvelles Manager</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
-        <link rel="stylesheet"
-            href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-        <link rel="stylesheet" href="css/site.css">
-        <link rel="icon" href="favicon.ico">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvelles Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="css/site.css">
+    <link rel="icon" href="favicon.ico">
+</head>
 
-    <body>
-        <div class="mainContainer">
-            <div class="headerPanel">
-                <div class="headerLayout">
-                    <img src="favicon.ico" alt="" data-toggle="tooltip"
-                        title="Gestionnaire de nouvelles">
-                    <span class="header">Gestionnaire de Nouvelles </span>
-                    <span class="cmd fa fa-plus-square row justify-content-end" id="newNouvelleCmd" title="Ajouter une nouvelle"
-                        data-toggle="tooltip"></span>
-                </div>
-
+<body>
+    <div class="mainContainer">
+        <div class="headerPanel">
+            <div class="headerLayout">
+                <img src="favicon.ico" alt="" data-toggle="tooltip" title="Gestionnaire de nouvelles">
+                <span class="header">Gestionnaire de Nouvelles </span>
+                <span class="cmd fa fa-plus-square row justify-content-end" id="newNouvelleCmd"
+                    title="Ajouter une nouvelle" data-toggle="tooltip"></span>
             </div>
 
-            <div class="scrollContainer">
-                <div id="nouvellesList">
-                    <!-- filled programmatically-->
-                </div>
-            </div>
-            <!-- Dialogs containers-->
-            <div>
-                <div id="nouvelleDlg">
-                    <form id="nouvelleForm">
-                        <input type="hidden" id="Id_input" value="0">
+        </div>
 
-                        <label for="title_input">Titre</label>
-                        <input type="text" id="title_input" class="form-control" required invalidMessage="Obligatoire">
-
-                        <label for="url_input">Hyperlien de l'image</label>
-                        <input type="url" id="url_input" class="form-control URL" required
-                            invalidMessage="Lien invalide">
-
-                        <label for="category_input">Catégorie</label>
-                        <input type="text" id="category_input" class="form-control" required
-                            invalidMessage="Obligatoire">
-
-                        <label for="title_input">Texte</label>
-                        <textarea id="text_input" class="form-control"cols="30" rows="10" required invalidMessage="Obligatoire"></textarea>
-                    </form>
-                </div>
-                <div id="confirmDeleteDlg">
-                    <span id="confirmationMessage"></span>
-                </div>
-                <div id="errorDlg">
-                    <span id="errorMessage"></span>
-                </div>
+        <div class="scrollContainer">
+            <div id="nouvellesList">
+                <!-- filled programmatically-->
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <script src="js/customValidation.js"></script>
-        <script src="js/api.js"></script>
-        <script src="js/date.js"></script>
-        <script defer>
-            const periodicRefreshPeriod = 10;
-            let holdCheckETag = false;
-            let currentETag = "";
-            let createMode = true;
-            let nouvelleIdToDelete = 0; // used by confirmDeleteDlg
-            let selectedCategory = "";
-            let previousScrollPosition = 0;
+        <!-- Dialogs containers-->
+        <div>
+            <div id="nouvelleDlg">
+                <form id="nouvelleForm">
+                    <input type="hidden" id="Id_input" value="0">
 
-            init_UI();
-            HEAD(checkETag, error);
-            setInterval(() => { HEAD(checkETag, error) }, periodicRefreshPeriod * 1000);
+                    <label for="title_input">Titre</label>
+                    <input type="text" id="title_input" class="form-control" required invalidMessage="Obligatoire">
 
-            function checkETag(ETag) {
-                if (!holdCheckETag && ETag != currentETag) {
-                    currentETag = ETag;
-                    getNouvellesList();
-                }
-            }
+                    <label for="url_input">Hyperlien de l'image</label>
+                    <input type="url" id="url_input" class="form-control URL" required invalidMessage="Lien invalide">
 
-            function getNouvellesList() {
-                function prepareQueryString() {
-                    let queryString = "?sort=Date,desc";
-                    return queryString;
-                }
-                GET_ALL(refreshNouvellesList, error, prepareQueryString());
-            }
-            function refreshNouvellesList(nouvelles, ETag) {
-                function makeImage(url) {
-                    let link = $(`<a href='${url}' target='_blank'></a>`)
-                    link.append($(`<img class="nouvelleImage" src="${url}">`));
-                    return link;
-                }
-                function insertIntoNouvelleList(nouvelle) {
-                    let titElem = $(`<div  class="ellipsis title">${nouvelle.Title}</div>`);
-                    let catElem = $(`<div class="ellipsis">${nouvelle.Category}</div>`);
-                    let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
-                    // partial collapse https://codepen.io/beedaan/pen/JWNWXa
-                    let textElem = $(`<div class="textModule"><p  class="collapse" id="collapseExample" aria-expanded="false">${nouvelle.Text}</p><a role="button" class="collapsed" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample"></div>`);
-                    
-                    let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
-                    let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
-                    let nouvelleRow = $("<div class='nouvelleLayout nouvelleRow'>");
+                    <label for="category_input">Catégorie</label>
+                    <input type="text" id="category_input" class="form-control" required invalidMessage="Obligatoire">
 
-                    nouvelleRow.append(titElem);
-                    nouvelleRow.append(catElem);
-                    nouvelleRow.append(dateElem);
-                    nouvelleRow.append(makeImage(nouvelle.ImageUrl));
-                   
-                    nouvelleRow.append(textElem);
-                    nouvelleRow.append(editCmd);
-                    nouvelleRow.append(deleteCmd);
-                    $("#nouvellesList").append(nouvelleRow);
-                }
+                    <label for="title_input">Texte</label>
+                    <textarea id="text_input" class="form-control" cols="30" rows="10" required
+                        invalidMessage="Obligatoire"></textarea>
+                </form>
+            </div>
+            <div id="confirmDeleteDlg">
+                <span id="confirmationMessage"></span>
+            </div>
+            <div id="errorDlg">
+                <span id="errorMessage"></span>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="js/customValidation.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/date.js"></script>
+    <script defer>
+        const periodicRefreshPeriod = 10;
+        let holdCheckETag = false;
+        let currentETag = "";
+        let createMode = true;
+        let nouvelleIdToDelete = 0; // used by confirmDeleteDlg
+        let selectedCategory = "";
+        let previousScrollPosition = 0;
+
+        init_UI();
+        HEAD(checkETag, error);
+        setInterval(() => { HEAD(checkETag, error) }, periodicRefreshPeriod * 1000);
+
+        function checkETag(ETag) {
+            if (!holdCheckETag && ETag != currentETag) {
                 currentETag = ETag;
-                previousScrollPosition = $(".scrollContainer").scrollTop();
-                $("#nouvellesList").empty();
-                let currentCategory = "";
-                for (let nouvelle of nouvelles) {
-                    insertIntoNouvelleList(nouvelle);
-                }
-                $(".scrollContainer").scrollTop(previousScrollPosition);
-                $(".editCmd").click(e => { editNouvelle(e) });
-                $(".deleteCmd").click(e => { deleteNouvelle(e) });
-                $('[data-toggle="tooltip"]').tooltip();
+                getNouvellesList();
             }
+        }
 
-            function error(status) {
-                let errorMessage = "";
-                switch (status) {
-                    case 0:
-                        errorMessage = "Le service ne répond pas";
-                        break;
-                    case 400:
-                    case 422:
-                        errorMessage = "Requête invalide";
-                        break;
-                    case 404:
-                        errorMessage = "Service ou données introuvables";
-                        break;
-                    case 409:
-                        errorMessage = "Conflits de données: Le Titre existe déjà";
-                        break;
-                    case 500:
-                        errorMessage = "Erreur interne du service";
-                        break;
-                    default: break;
-                }
-                $("#errorMessage").text(errorMessage);
-                $("#errorDlg").dialog('open');
+        function getNouvellesList() {
+            function prepareQueryString() {
+                let queryString = "?sort=Date,desc";
+                return queryString;
             }
-
-            function newNouvelle() {
-                holdCheckETag = true;
-                createMode = true;
-                resetNouvelleForm()
-                $("#nouvelleDlg").dialog('option', 'title', 'Ajout de nouvelle');
-                $("#nouvelleDlgOkBtn").text("Ajouter");
-                $("#nouvelleDlg").dialog('open');
+            GET_ALL(refreshNouvellesList, error, prepareQueryString());
+        }
+        function refreshNouvellesList(nouvelles, ETag) {
+            function makeImage(url) {
+                let link = $(`<a href='${url}' target='_blank'></a>`)
+                link.append($(`<img class="nouvelleImage" src="${url}">`));
+                return link;
             }
-            function editNouvelle(e) {
-                holdCheckETag = true;
-                createMode = false;
-                GET_ID(e.target.getAttribute("nouvelleid"), nouvelleToForm, error);
-                holdCheckETag = true;
-                $("#nouvelleDlg").dialog('option', 'title', 'Modification de nouvelle');
-                $("#nouvelleDlgOkBtn").text("Modifier");
-                $("#nouvelleDlg").dialog('open');
-            }
-            function deleteNouvelle(e) {
-                holdCheckETag = true;
-                nouvelleIdToDelete = e.target.getAttribute("nouvelleid")
-                GET_ID(
-                    nouvelleIdToDelete,
-                    nouvelle => {
-                        $("#confirmationMessage").html("Voulez-vous vraiment effacer la nouvelle <b>" + nouvelle.Title + "</b>?")
-                    },
-                    error
-                );
-                holdCheckETag = true;
-                $("#confirmDlg").dialog('option', 'title', 'Retrait de nouvelle...');
-                $("#confirmDeleteDlgOkBtn").text("Effacer");
-                $("#confirmDeleteDlg").dialog('open');
-            }
-
-            function resetNouvelleForm() {
-                $("#Id_input").val("0");
-                $("#title_input").val("");
-                $("#url_input").val("");
-                $("#category_input").val("");
-            }
-            function nouvelleFromForm() {
-                if ($("#nouvelleForm")[0].checkValidity()) {
-                    let nouvelle = { Id: parseInt($("#Id_input").val()), Title: $("#title_input").val(), ImageUrl: $("#url_input").val(),
-                    Text: $("#text_input").val(), Category: $("#category_input").val(), Date: Date.now() };
-                    return nouvelle;
-                } else {
-                    $("#nouvelleForm")[0].reportValidity()
-                }
-                return false;
-            }
-            function nouvelleToForm(nouvelle) {
-                $("#Id_input").val(nouvelle.Id);
-                $("#title_input").val(nouvelle.Title);
-                $("#url_input").val(nouvelle.ImageUrl);
-                $("#text_input").val(nouvelle.Text);
-                $("#category_input").val(nouvelle.Category);
-            }
-
-            function init_UI() {
-                $("#newNouvelleCmd").click(newNouvelle)
-
-                $(".fa-refresh").click(e => { getNouvellesList() })
-
-                $("#nouvelleDlg").dialog({
-                    title: "Formulaire une nouvelle",
-                    autoOpen: false,
-                    modal: true,
-                    show: { effect: 'fade', speed: 400 },
-                    hide: { effect: 'fade', speed: 400 },
-                    width: 600,
-                    minWidth: 400,
-                    maxWidth: 1000,
-                    height: 700,
-                    minHeight: 440,
-                    maxHeight: 900,
-                    position: { my: "top", at: "top", of: window },
-                    buttons: [{
-                        id: "nouvelleDlgOkBtn",
-                        text: "Title will be changed dynamically",
-                        click: function () {
-                            let nouvelle = nouvelleFromForm();
-                            if (nouvelle) {
-                                if (createMode)
-                                    POST(nouvelle, refreshNouvellesList, error);
-                                else
-                                    PUT(nouvelle, refreshNouvellesList, error);
-                                resetNouvelleForm();
-                                holdCheckETag = false;
-                                $(this).dialog("close");
-                            }
+            function addShowMoreEvents() {
+                document.querySelectorAll(".collapser").forEach(element => {
+                    element.addEventListener("click", event => {
+                        let target = document.querySelector(element.getAttribute("target"))
+                        if (target.className == "collapse") {
+                            target.className = "collapsing";
+                            element.textContent = "- Show Less";
                         }
-                    },
-                    {
-                        text: "Annuler",
-                        click: function () {
-                            holdCheckETag = false;
-                            $(this).dialog("close");
+                        else {
+                            target.className = "collapse";
+                            element.textContent = "+ Show More";
                         }
-                    }]
-                });
-
-                $("#confirmDeleteDlg").dialog({
-                    title: "Attention!",
-                    autoOpen: false,
-                    modal: true,
-                    show: { effect: 'fade', speed: 400 },
-                    hide: { effect: 'fade', speed: 400 },
-                    width: 500, minWidth: 500, maxWidth: 500,
-                    height: 230, minHeight: 230, maxHeight: 230,
-                    position: { my: "top", at: "top", of: window },
-                    buttons: [{
-                        id: "confirmDeleteDlgOkBtn",
-                        text: "Oui",
-                        click: function () {
-                            holdCheckETag = false;
-                            if (nouvelleIdToDelete)
-                                DELETE(nouvelleIdToDelete, refreshNouvellesList, error);
-                            nouvelleIdToDelete = 0;
-                            $(this).dialog("close");
-                        }
-                    },
-                    {
-                        text: "Annuler",
-                        click: function () {
-                            holdCheckETag = false;
-                            nouvelleIdToDelete = 0;
-                            $(this).dialog("close");
-                        }
-                    }]
-                });
-
-                $("#errorDlg").dialog({
-                    title: "Erreur...",
-                    autoOpen: false,
-                    modal: true,
-                    show: { effect: 'fade', speed: 400 },
-                    hide: { effect: 'fade', speed: 400 },
-                    width: 500, minWidth: 500, maxWidth: 500,
-                    height: 230, minHeight: 230, maxHeight: 230,
-                    position: { my: "top", at: "top", of: window },
-                    buttons: [{
-                        text: "Fermer",
-                        click: function () {
-                            holdCheckETag = false;
-                            nouvelleIdToDelete = 0;
-                            $(this).dialog("close");
-                        }
-                    }]
+                    })
                 });
             }
-        </script>
-    </body>
+            function insertIntoNouvelleList(nouvelle) {
+                let titElem = $(`<div  class="ellipsis title">${nouvelle.Title}</div>`);
+                let catElem = $(`<div class="ellipsis">${nouvelle.Category}</div>`);
+                let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
+                // partial collapse https://codepen.io/beedaan/pen/JWNWXa
+                let textElem = $(`<div class="textModule"><p class="collapse" id="collapser${nouvelle.Id}" aria-expanded="false">${nouvelle.Text}</p><button id="ShowMore${nouvelle.Id}" target="#collapser${nouvelle.Id}" class="collapser btn btn-primary">+ Show More</button></div>`);
+
+                let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
+                let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
+                let nouvelleRow = $("<div class='nouvelleLayout nouvelleRow'>");
+
+                nouvelleRow.append(titElem);
+                nouvelleRow.append(catElem);
+                nouvelleRow.append(dateElem);
+                nouvelleRow.append(makeImage(nouvelle.ImageUrl));
+
+                nouvelleRow.append(textElem);
+                nouvelleRow.append(editCmd);
+                nouvelleRow.append(deleteCmd);
+                $("#nouvellesList").append(nouvelleRow);
+            }
+            currentETag = ETag;
+            previousScrollPosition = $(".scrollContainer").scrollTop();
+            $("#nouvellesList").empty();
+            let currentCategory = "";
+            for (let nouvelle of nouvelles) {
+                insertIntoNouvelleList(nouvelle);
+            }
+            $(".scrollContainer").scrollTop(previousScrollPosition);
+            $(".editCmd").click(e => { editNouvelle(e) });
+            $(".deleteCmd").click(e => { deleteNouvelle(e) });
+            $('[data-toggle="tooltip"]').tooltip();
+            addShowMoreEvents();
+        }
+
+        function error(status) {
+            let errorMessage = "";
+            switch (status) {
+                case 0:
+                    errorMessage = "Le service ne répond pas";
+                    break;
+                case 400:
+                case 422:
+                    errorMessage = "Requête invalide";
+                    break;
+                case 404:
+                    errorMessage = "Service ou données introuvables";
+                    break;
+                case 409:
+                    errorMessage = "Conflits de données: Le Titre existe déjà";
+                    break;
+                case 500:
+                    errorMessage = "Erreur interne du service";
+                    break;
+                default: break;
+            }
+            $("#errorMessage").text(errorMessage);
+            $("#errorDlg").dialog('open');
+        }
+
+        function newNouvelle() {
+            holdCheckETag = true;
+            createMode = true;
+            resetNouvelleForm()
+            $("#nouvelleDlg").dialog('option', 'title', 'Ajout de nouvelle');
+            $("#nouvelleDlgOkBtn").text("Ajouter");
+            $("#nouvelleDlg").dialog('open');
+        }
+        function editNouvelle(e) {
+            holdCheckETag = true;
+            createMode = false;
+            GET_ID(e.target.getAttribute("nouvelleid"), nouvelleToForm, error);
+            holdCheckETag = true;
+            $("#nouvelleDlg").dialog('option', 'title', 'Modification de nouvelle');
+            $("#nouvelleDlgOkBtn").text("Modifier");
+            $("#nouvelleDlg").dialog('open');
+        }
+        function deleteNouvelle(e) {
+            holdCheckETag = true;
+            nouvelleIdToDelete = e.target.getAttribute("nouvelleid")
+            GET_ID(
+                nouvelleIdToDelete,
+                nouvelle => {
+                    $("#confirmationMessage").html("Voulez-vous vraiment effacer la nouvelle <b>" + nouvelle.Title + "</b>?")
+                },
+                error
+            );
+            holdCheckETag = true;
+            $("#confirmDlg").dialog('option', 'title', 'Retrait de nouvelle...');
+            $("#confirmDeleteDlgOkBtn").text("Effacer");
+            $("#confirmDeleteDlg").dialog('open');
+        }
+
+        function resetNouvelleForm() {
+            $("#Id_input").val("0");
+            $("#title_input").val("");
+            $("#url_input").val("");
+            $("#category_input").val("");
+        }
+        function nouvelleFromForm() {
+            if ($("#nouvelleForm")[0].checkValidity()) {
+                let nouvelle = {
+                    Id: parseInt($("#Id_input").val()), Title: $("#title_input").val(), ImageUrl: $("#url_input").val(),
+                    Text: $("#text_input").val(), Category: $("#category_input").val(), Date: Date.now()
+                };
+                return nouvelle;
+            } else {
+                $("#nouvelleForm")[0].reportValidity()
+            }
+            return false;
+        }
+        function nouvelleToForm(nouvelle) {
+            $("#Id_input").val(nouvelle.Id);
+            $("#title_input").val(nouvelle.Title);
+            $("#url_input").val(nouvelle.ImageUrl);
+            $("#text_input").val(nouvelle.Text);
+            $("#category_input").val(nouvelle.Category);
+        }
+
+        function init_UI() {
+            $("#newNouvelleCmd").click(newNouvelle)
+
+            $(".fa-refresh").click(e => { getNouvellesList() })
+
+            $("#nouvelleDlg").dialog({
+                title: "Formulaire une nouvelle",
+                autoOpen: false,
+                modal: true,
+                show: { effect: 'fade', speed: 400 },
+                hide: { effect: 'fade', speed: 400 },
+                width: 600,
+                minWidth: 400,
+                maxWidth: 1000,
+                height: 700,
+                minHeight: 440,
+                maxHeight: 900,
+                position: { my: "top", at: "top", of: window },
+                buttons: [{
+                    id: "nouvelleDlgOkBtn",
+                    text: "Title will be changed dynamically",
+                    click: function () {
+                        let nouvelle = nouvelleFromForm();
+                        if (nouvelle) {
+                            if (createMode)
+                                POST(nouvelle, refreshNouvellesList, error);
+                            else
+                                PUT(nouvelle, refreshNouvellesList, error);
+                            resetNouvelleForm();
+                            holdCheckETag = false;
+                            $(this).dialog("close");
+                        }
+                    }
+                },
+                {
+                    text: "Annuler",
+                    click: function () {
+                        holdCheckETag = false;
+                        $(this).dialog("close");
+                    }
+                }]
+            });
+
+            $("#confirmDeleteDlg").dialog({
+                title: "Attention!",
+                autoOpen: false,
+                modal: true,
+                show: { effect: 'fade', speed: 400 },
+                hide: { effect: 'fade', speed: 400 },
+                width: 500, minWidth: 500, maxWidth: 500,
+                height: 230, minHeight: 230, maxHeight: 230,
+                position: { my: "top", at: "top", of: window },
+                buttons: [{
+                    id: "confirmDeleteDlgOkBtn",
+                    text: "Oui",
+                    click: function () {
+                        holdCheckETag = false;
+                        if (nouvelleIdToDelete)
+                            DELETE(nouvelleIdToDelete, refreshNouvellesList, error);
+                        nouvelleIdToDelete = 0;
+                        $(this).dialog("close");
+                    }
+                },
+                {
+                    text: "Annuler",
+                    click: function () {
+                        holdCheckETag = false;
+                        nouvelleIdToDelete = 0;
+                        $(this).dialog("close");
+                    }
+                }]
+            });
+
+            $("#errorDlg").dialog({
+                title: "Erreur...",
+                autoOpen: false,
+                modal: true,
+                show: { effect: 'fade', speed: 400 },
+                hide: { effect: 'fade', speed: 400 },
+                width: 500, minWidth: 500, maxWidth: 500,
+                height: 230, minHeight: 230, maxHeight: 230,
+                position: { my: "top", at: "top", of: window },
+                buttons: [{
+                    text: "Fermer",
+                    click: function () {
+                        holdCheckETag = false;
+                        nouvelleIdToDelete = 0;
+                        $(this).dialog("close");
+                    }
+                }]
+            });
+        }
+    </script>
+</body>
 
 </html>
