@@ -14,18 +14,10 @@
     </head>
 
     <body>
-        <div class="headerPanel">
-            <div class="headerLayout">
-                <img src="favicon.ico" alt="" data-toggle="tooltip"
-                    title="Gestionnaire de nouvelles">
-                <span class="header">Gestionnaire de Nouvelles </span>
-                <span class="cmd fa fa-plus-square row justify-content-end" id="newNouvelleCmd" title="Ajouter une nouvelle"
-                    data-toggle="tooltip"></span>
-            </div>
+ 
 
         </div>
         <div class="mainContainer">
-            <!--
             <div class="headerPanel">
                 <div class="headerLayout">
                     <img src="favicon.ico" alt="" data-toggle="tooltip"
@@ -33,10 +25,21 @@
                     <span class="header">Gestionnaire de Nouvelles </span>
                     <span class="cmd fa fa-plus-square row justify-content-end" id="newNouvelleCmd" title="Ajouter une nouvelle"
                         data-toggle="tooltip"></span>
+                        <span class="cmd fa fa-search" title="Afficher/masquer la barre de recherche"
+                        data-toggle="tooltip"></span>
                 </div>
-
+                <div id="searchBar">
+                    <div class="searchBarLayout">
+                        <select id="searchCategory" class="form-control searchInput">
+                            <!-- filled programmatically-->
+                        </select>
+                        <span> <!-- skip a column --> </span>
+                        <input type="search" id="searchTitle" class="form-control searchInput" placeholder="Recherche de nouvelles" />
+                        <span> <!-- skip a column --> </span>
+                        <span class="cmd fa fa-refresh"></span>
+                    </div>
+                </div>
             </div>
-            -->
 
             <div class="scrollContainer">
                 <div id="nouvellesList">
@@ -86,6 +89,9 @@
             let nouvelleIdToDelete = 0; // used by confirmDeleteDlg
             let selectedCategory = "";
             let previousScrollPosition = 0;
+            let searchCategory = "";
+            let searchTitle = "";
+            let hideSearchBar = true;
 
             init_UI();
             HEAD(checkETag, error);
@@ -101,9 +107,29 @@
             function getNouvellesList() {
                 function prepareQueryString() {
                     let queryString = "?sort=Date,desc";
+                    if (!hideSearchBar) {
+                        selectedCategory = $("#searchCategory").val();
+                        let searchTitle = $("#searchTitle").val();
+                        if (selectedCategory != "")
+                            queryString += "&Category=" + selectedCategory;
+                        if (searchTitle != "")
+                            queryString += "&Title=*" + searchTitle + "*";
+                    }
+
                     return queryString;
                 }
                 GET_ALL(refreshNouvellesList, error, prepareQueryString());
+                GET_ALL(refreshCategoryList, error, "?fields=Category");
+            }
+
+            function refreshCategoryList(categories) {
+                $("#searchCategory").empty();
+                $("#searchCategory").append("<option value=''>Toutes les catégories</option>");
+                for (let item of categories) {
+                    let category = item.Category;
+                    let selected = (selectedCategory == category ? " selected " : "");
+                    $("#searchCategory").append(`<option value='${category}' ${selected}>${category}</option>`);
+                }
             }
             function refreshNouvellesList(nouvelles, ETag) {
                 function makeImage(url) {
@@ -229,8 +255,19 @@
 
             function init_UI() {
                 $("#newNouvelleCmd").click(newNouvelle)
+                $("#searchCategory").change(() => { selectedCategory = $("#searchCategory").val(); getNouvellesList(); })
 
                 $(".fa-refresh").click(e => { getNouvellesList() })
+                
+
+                $(".fa-search").click(e => {
+                    hideSearchBar = !hideSearchBar;
+                    if (hideSearchBar)
+                        $("#searchBar").hide();
+                    else
+                        $("#searchBar").show();
+                        getNouvellesList();
+                })
 
                 $("#nouvelleDlg").dialog({
                     title: "Formulaire une nouvelle",
