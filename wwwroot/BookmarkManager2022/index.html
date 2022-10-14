@@ -128,8 +128,8 @@
                     return link;
                 }
                 function insertIntoBookmarkList(bookmark) {
-                    let catElem = $(`<div class="ellipsis">${bookmark.Category}</div>`);
-                    let titElem = $(`<div  class="ellipsis">${bookmark.Title}</div>`);
+                    let catElem = $(`<div class="category">${bookmark.Category}</div>`);
+                    let titElem = $(`<div  class="title">${bookmark.Title}</div>`);
                     let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square" bookmarkid="${bookmark.Id}" title="Editer ${bookmark.Title}" data-toggle="tooltip">`);
                     let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close" bookmarkid="${bookmark.Id}" title="Effacer ${bookmark.Title}" data-toggle="tooltip">`);
                     let bookmarkRow = $("<div class='bookmarkLayout bookmarkRow'>");
