@@ -67,6 +67,7 @@
                     <label for="title_input">Texte</label>
                     <textarea id="text_input" class="form-control" cols="30" rows="10" required
                         invalidMessage="Obligatoire"></textarea>
+                    <input type="hidden" id="date_input" class="form-control">
                 </form>
             </div>
             <div id="confirmDeleteDlg">
@@ -271,7 +272,7 @@
             if ($("#nouvelleForm")[0].checkValidity()) {
                 let nouvelle = {
                     Id: parseInt($("#Id_input").val()), Title: $("#title_input").val(), ImageUrl: $("#url_input").val(),
-                    Text: $("#text_input").val(), Category: $("#category_input").val(), Date: Date.now()
+                    Text: $("#text_input").val(), Category: $("#category_input").val(), Date: $("#date_input").val()
                 };
                 return nouvelle;
             } else {
@@ -285,6 +286,7 @@
             $("#url_input").val(nouvelle.ImageUrl);
             $("#text_input").val(nouvelle.Text);
             $("#category_input").val(nouvelle.Category);
+            $("#date_input").val(nouvelle.Date);
         }
 
         function init_UI() {
@@ -322,8 +324,11 @@
                     click: function () {
                         let nouvelle = nouvelleFromForm();
                         if (nouvelle) {
-                            if (createMode)
+                            if (createMode){
+                                nouvelle.Date = Date.now();
                                 POST(nouvelle, refreshNouvellesList, error);
+                            }
+        
                             else
                                 PUT(nouvelle, refreshNouvellesList, error);
                             resetNouvelleForm();
