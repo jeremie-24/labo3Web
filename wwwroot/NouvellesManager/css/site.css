@@ -46,7 +46,7 @@ body {
 #nouvellesList {
     width: 100%;
     padding: 10px;
-    text-align: center;
+    /*text-align: center;*/
 }
 
 .favicon {
@@ -64,6 +64,11 @@ body {
 
 .nouvelleLayout {
     border-radius: 8px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+    margin-bottom: 25px
 }
 
 
@@ -98,11 +103,31 @@ label {
     text-overflow: ellipsis;
 }
 .nouvelleImage{
-    max-width: 90%;
+    width: 100%;
+    /*
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    */
 }
+
+
 .title{
     font-size: calc(1.325rem + .9vw);
     font-weight: 500;
+}
+.date{
+    color: rgb(152, 152, 152);
+}
+.category{
+    color: rgb(0, 98, 255);
+    font-size: calc(0.5rem + .9vw);
+    font-weight: 500;
+}
+.nouvelleHeaderLayout{
+    display: grid;
+    grid-template-columns: auto 35px 35px;
+    align-items: center;
 }
 
 p{
