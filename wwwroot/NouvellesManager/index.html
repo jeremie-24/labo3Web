@@ -143,11 +143,11 @@
                         let target = document.querySelector(element.getAttribute("target"))
                         if (target.className == "collapse") {
                             target.className = "collapsing";
-                            element.textContent = "- Show Less";
+                            element.textContent = "- Voir moins";
                         }
                         else {
                             target.className = "collapse";
-                            element.textContent = "+ Show More";
+                            element.textContent = "+ Voir plus";
                         }
                     })
                 });
@@ -157,7 +157,7 @@
                 let catElem = $(`<div class="ellipsis">${nouvelle.Category}</div>`);
                 let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
                 // partial collapse https://codepen.io/beedaan/pen/JWNWXa
-                let textElem = $(`<div class="textModule"><p class="collapse" id="collapser${nouvelle.Id}" aria-expanded="false">${nouvelle.Text}</p><button id="ShowMore${nouvelle.Id}" target="#collapser${nouvelle.Id}" class="collapser btn btn-primary">+ Show More</button></div>`);
+                let textElem = $(`<div class="textModule"><p class="collapse" id="collapser${nouvelle.Id}" aria-expanded="false">${nouvelle.Text}</p><button id="ShowMore${nouvelle.Id}" target="#collapser${nouvelle.Id}" class="collapser btn btn-primary">+ Voir plus</button></div>`);
 
                 let editCmd = $(`<div class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
                 let deleteCmd = $(`<div class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
