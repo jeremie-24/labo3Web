@@ -96,19 +96,16 @@
         let searchTitle = "";
         let hideSearchBar = true;
         const initialLimit = 3;
-        let currentOffset = initialLimit;
+        let currentOffset = initialLimit ;
         const limitScroll = 1;
         let canAddNouvelle = true; // Pour empêcher le double ajout de nouvelles quand on scroll vite
 
 
         init_UI();
-        HEAD(initalCheckETag, error);
+        HEAD(checkETag, error);
 
         setInterval(() => { HEAD(checkETag, error); }, periodicRefreshPeriod * 1000);
 
-        function initalCheckETag(ETag) {
-            checkETag(ETag);
-        }
         function checkETag(ETag) {
             if (!holdCheckETag && ETag != currentETag) {
                 currentETag = ETag;
@@ -222,6 +219,7 @@
                 insertIntoNouvelleList(nouvelle);
             }
             canAddNouvelle = true;
+            currentOffset += limitScroll;
         }
 
         function error(status) {
@@ -420,8 +418,9 @@
                 // Pour empêcher le double ajout de nouvelles quand on scroll vite
                 if (canAddNouvelle) {
                     canAddNouvelle = false;
-                    currentOffset += limitScroll;
+      
                     GET_ALL(addNouvelle, error, prepareQueryString(currentOffset,limitScroll));
+                
                 }
 
             }
