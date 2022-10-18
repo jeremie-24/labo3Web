@@ -148,23 +148,6 @@
             }
         }
         function refreshNouvellesList(nouvelles, ETag) {
-
-            function addShowMoreEvents() {
-                document.querySelectorAll(".collapser").forEach(element => {
-                    element.addEventListener("click", event => {
-                        let target = document.querySelector(element.getAttribute("target"))
-                        if (target.className == "collapse") {
-                            target.className = "collapsing";
-                            element.textContent = "- Voir moins";
-                        }
-                        else {
-                            target.className = "collapse";
-                            element.textContent = "+ Voir plus";
-                        }
-                    })
-                });
-            }
-
             currentETag = ETag;
             previousScrollPosition = $(".scrollContainer").scrollTop();
             $("#nouvellesList").empty();
@@ -173,10 +156,7 @@
                 insertIntoNouvelleList(nouvelle);
             }
             $(".scrollContainer").scrollTop(previousScrollPosition);
-            $(".editCmd").click(e => { editNouvelle(e) });
-            $(".deleteCmd").click(e => { deleteNouvelle(e) });
             $('[data-toggle="tooltip"]').tooltip();
-            addShowMoreEvents();
         }
         function makeImage(url) {
             let link = $(`<a href='${url}' class="center" target='_blank'></a>`)
@@ -184,11 +164,24 @@
             return link;
         }
         function insertIntoNouvelleList(nouvelle) {
+            function addShowMoreEvents(element) {
+                element.addEventListener("click", event => {
+                    let target = document.querySelector(element.getAttribute("target"))
+                    if (target.className == "collapse") {
+                        target.className = "collapsing";
+                        element.textContent = "- Voir moins";
+                    }
+                    else {
+                        target.className = "collapse";
+                        element.textContent = "+ Voir plus";
+                    }
+                })
+            }
 
             let headerElem = $(`<div class="nouvelleHeaderLayout"></div>`);
             let catElem = $(`<div class="ellipsis category">${nouvelle.Category}</div>`);
-            let editCmd = $(`<span class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
-            let deleteCmd = $(`<span class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
+            let editCmd = $(`<span id="edit${nouvelle.Id}" class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
+            let deleteCmd = $(`<span id="delete${nouvelle.Id}" class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
 
             let titElem = $(`<div  class="title">${nouvelle.Title}</div>`);
             let dateElem = $(`<div  class="ellipsis date">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
@@ -219,6 +212,10 @@
             $("#nouvellesList").append(nouvelleRow);
 
             console.log("ajout nouvelle");
+            let item = document.querySelector(`#ShowMore${nouvelle.Id}`);
+            $(`#edit${nouvelle.Id}`).click(e => { editNouvelle(e) });
+            $(`#delete${nouvelle.Id}`).click(e => { deleteNouvelle(e) });
+            addShowMoreEvents(item);
         }
         function addNouvelle(nouvelles, ETag) {
             currentETag = ETag;
