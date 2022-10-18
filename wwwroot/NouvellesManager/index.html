@@ -96,8 +96,7 @@
         let searchTitle = "";
         let hideSearchBar = true;
         const initialLimit = 3;
-        let offset = 0;
-        let limit = initialLimit;
+        let currentOffset = initialLimit;
         const limitScroll = 1;
         let canAddNouvelle = true; // Pour empêcher le double ajout de nouvelles quand on scroll vite
 
@@ -109,8 +108,6 @@
 
         function initalCheckETag(ETag) {
             checkETag(ETag);
-            limit = limitScroll;
-            offset = initialLimit;
         }
         function checkETag(ETag) {
             if (!holdCheckETag && ETag != currentETag) {
@@ -119,7 +116,7 @@
             }
         }
 
-        function prepareQueryString() {
+        function prepareQueryString(offset,limit) {
             let queryString = `?sort=Date,desc&offset=${offset}&limit=${limit}`;
             if (!hideSearchBar) {
                 selectedCategory = $("#searchCategory").val();
@@ -134,9 +131,10 @@
         }
         function getNouvellesList() {
 
-            GET_ALL(refreshNouvellesList, error, prepareQueryString());
+            GET_ALL(refreshNouvellesList, error, prepareQueryString(0,currentOffset));
             GET_ALL(refreshCategoryList, error, "?fields=Category");
         }
+
 
         function refreshCategoryList(categories) {
             $("#searchCategory").empty();
@@ -425,8 +423,8 @@
                 // Pour empêcher le double ajout de nouvelles quand on scroll vite
                 if (canAddNouvelle) {
                     canAddNouvelle = false;
-                    offset += limit;
-                    GET_ALL(addNouvelle, error, prepareQueryString());
+                    currentOffset += limitScroll;
+                    GET_ALL(addNouvelle, error, prepareQueryString(currentOffset,limitScroll));
                 }
 
             }
