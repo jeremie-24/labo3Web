@@ -95,11 +95,23 @@
         let searchCategory = "";
         let searchTitle = "";
         let hideSearchBar = true;
+        const initialLimit = 3;
+        let offset = 0;
+        let limit = initialLimit;
+        const limitScroll = 1;
+        let canAddNouvelle = true; // Pour empêcher le double ajout de nouvelles quand on scroll vite
+
 
         init_UI();
-        HEAD(checkETag, error);
-        setInterval(() => { HEAD(checkETag, error) }, periodicRefreshPeriod * 1000);
+        HEAD(initalCheckETag, error);
 
+        setInterval(() => { HEAD(checkETag, error); }, periodicRefreshPeriod * 1000);
+
+        function initalCheckETag(ETag) {
+            checkETag(ETag);
+            limit = limitScroll;
+            offset = initialLimit;
+        }
         function checkETag(ETag) {
             if (!holdCheckETag && ETag != currentETag) {
                 currentETag = ETag;
@@ -107,20 +119,21 @@
             }
         }
 
-        function getNouvellesList() {
-            function prepareQueryString() {
-                let queryString = "?sort=Date,desc";
-                if (!hideSearchBar) {
-                    selectedCategory = $("#searchCategory").val();
-                    let searchTitle = $("#searchTitle").val();
-                    if (selectedCategory != "")
-                        queryString += "&Category=" + selectedCategory;
-                    if (searchTitle != "")
-                        queryString += "&Title=*" + searchTitle + "*";
-                }
-
-                return queryString;
+        function prepareQueryString() {
+            let queryString = `?sort=Date,desc&offset=${offset}&limit=${limit}`;
+            if (!hideSearchBar) {
+                selectedCategory = $("#searchCategory").val();
+                let searchTitle = $("#searchTitle").val();
+                if (selectedCategory != "")
+                    queryString += "&Category=" + selectedCategory;
+                if (searchTitle != "")
+                    queryString += "&Title=*" + searchTitle + "*";
             }
+
+            return queryString;
+        }
+        function getNouvellesList() {
+
             GET_ALL(refreshNouvellesList, error, prepareQueryString());
             GET_ALL(refreshCategoryList, error, "?fields=Category");
         }
@@ -135,11 +148,7 @@
             }
         }
         function refreshNouvellesList(nouvelles, ETag) {
-            function makeImage(url) {
-                let link = $(`<a href='${url}' class="center" target='_blank'></a>`)
-                link.append($(`<img class="nouvelleImage" src="${url}">`));
-                return link;
-            }
+
             function addShowMoreEvents() {
                 document.querySelectorAll(".collapser").forEach(element => {
                     element.addEventListener("click", event => {
@@ -155,41 +164,7 @@
                     })
                 });
             }
-            function insertIntoNouvelleList(nouvelle) {
 
-                let headerElem = $(`<div class="nouvelleHeaderLayout"></div>`);
-                let catElem = $(`<div class="ellipsis category">${nouvelle.Category}</div>`);
-                let editCmd = $(`<span class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
-                let deleteCmd = $(`<span class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
-
-                let titElem = $(`<div  class="title">${nouvelle.Title}</div>`);
-                let dateElem = $(`<div  class="ellipsis">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
-                // partial collapse https://codepen.io/beedaan/pen/JWNWXa
-                let textElem = $(`<div class="textModule"><p class="collapse" id="collapser${nouvelle.Id}" aria-expanded="false">${nouvelle.Text}</p><button id="ShowMore${nouvelle.Id}" target="#collapser${nouvelle.Id}" class="collapser btn btn-primary">+ Voir plus</button></div>`);
-
-                let nouvelleRow = $("<div class='nouvelleLayout nouvelleRow'>");
-
-                let hr = $("<hr>");
-
-
-                headerElem.append(catElem);
-                headerElem.append(editCmd);
-                headerElem.append(deleteCmd);
-                nouvelleRow.append(headerElem);
-                /*
-                nouvelleRow.append(catElem);
-                nouvelleRow.append(editCmd);
-                nouvelleRow.append(deleteCmd);
-                */
-
-                nouvelleRow.append(titElem);
-                nouvelleRow.append(makeImage(nouvelle.ImageUrl));
-                nouvelleRow.append(dateElem);
-
-                nouvelleRow.append(textElem);
-                nouvelleRow.append(hr);
-                $("#nouvellesList").append(nouvelleRow);
-            }
             currentETag = ETag;
             previousScrollPosition = $(".scrollContainer").scrollTop();
             $("#nouvellesList").empty();
@@ -202,6 +177,56 @@
             $(".deleteCmd").click(e => { deleteNouvelle(e) });
             $('[data-toggle="tooltip"]').tooltip();
             addShowMoreEvents();
+        }
+        function makeImage(url) {
+            let link = $(`<a href='${url}' class="center" target='_blank'></a>`)
+            link.append($(`<img class="nouvelleImage" src="${url}">`));
+            return link;
+        }
+        function insertIntoNouvelleList(nouvelle) {
+
+            let headerElem = $(`<div class="nouvelleHeaderLayout"></div>`);
+            let catElem = $(`<div class="ellipsis category">${nouvelle.Category}</div>`);
+            let editCmd = $(`<span class="cmd editCmd fa fa-pencil-square littleMargin" nouvelleid="${nouvelle.Id}" title="Editer ${nouvelle.Title}" data-toggle="tooltip">`);
+            let deleteCmd = $(`<span class="cmd deleteCmd fa fa-window-close littleMargin" nouvelleid="${nouvelle.Id}" title="Effacer ${nouvelle.Title}" data-toggle="tooltip">`);
+
+            let titElem = $(`<div  class="title">${nouvelle.Title}</div>`);
+            let dateElem = $(`<div  class="ellipsis date">${convertToFrenchDate(parseInt(nouvelle.Date))}</div>`);
+            // partial collapse https://codepen.io/beedaan/pen/JWNWXa
+            let textElem = $(`<div class="textModule"><p class="collapse" id="collapser${nouvelle.Id}" aria-expanded="false">${nouvelle.Text}</p><button id="ShowMore${nouvelle.Id}" target="#collapser${nouvelle.Id}" class="collapser btn btn-primary">+ Voir plus</button></div>`);
+
+            let nouvelleRow = $("<div class='nouvelleLayout nouvelleRow'>");
+
+            let hr = $("<hr>");
+
+
+            headerElem.append(catElem);
+            headerElem.append(editCmd);
+            headerElem.append(deleteCmd);
+            nouvelleRow.append(headerElem);
+            /*
+            nouvelleRow.append(catElem);
+            nouvelleRow.append(editCmd);
+            nouvelleRow.append(deleteCmd);
+            */
+
+            nouvelleRow.append(titElem);
+            nouvelleRow.append(makeImage(nouvelle.ImageUrl));
+            nouvelleRow.append(dateElem);
+
+            nouvelleRow.append(textElem);
+            nouvelleRow.append(hr);
+            $("#nouvellesList").append(nouvelleRow);
+
+            console.log("ajout nouvelle");
+        }
+        function addNouvelle(nouvelles, ETag) {
+            currentETag = ETag;
+
+            for (let nouvelle of nouvelles) {
+                insertIntoNouvelleList(nouvelle);
+            }
+            canAddNouvelle = true;
         }
 
         function error(status) {
@@ -324,11 +349,11 @@
                     click: function () {
                         let nouvelle = nouvelleFromForm();
                         if (nouvelle) {
-                            if (createMode){
+                            if (createMode) {
                                 nouvelle.Date = Date.now();
                                 POST(nouvelle, getNouvellesList, error);
                             }
-        
+
                             else
                                 PUT(nouvelle, getNouvellesList, error);
                             resetNouvelleForm();
@@ -395,6 +420,18 @@
                 }]
             });
         }
+        $(".scrollContainer").scroll(function () {
+            if ($(".scrollContainer").scrollTop() + $(".scrollContainer").innerHeight() >= $("#nouvellesList").height()) {
+                // Pour empêcher le double ajout de nouvelles quand on scroll vite
+                if (canAddNouvelle) {
+                    canAddNouvelle = false;
+                    offset += limit;
+                    GET_ALL(addNouvelle, error, prepareQueryString());
+                }
+
+            }
+        });
+
     </script>
 </body>
 
